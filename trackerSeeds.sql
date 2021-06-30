@@ -14,3 +14,11 @@ CREATE TABLE role(
   salary DECIMAL(9,2) NOT NULL,
   department_id INTEGER NOT NULL
 );
+
+CREATE TABLE employee(
+  id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  first_name VARCHAR(30) NOT NULL,
+  last_name VARCHAR(30) NOT NULL,
+  role_id INTEGER NOT NULL,
+  manager_id INTEGER
+);
