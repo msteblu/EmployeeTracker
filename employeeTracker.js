@@ -19,8 +19,26 @@ const connection = mysql.createConnection({
 });
 
 const start = () => {
-    console.log();
-        
+    console.log(`
+        - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+        |                                                     |
+        |    _____                 _                          |
+        |   | ____|_ __ ___  _ __ | | ___  _   _  ___  ___    |
+        |   |  _| | '_ ' _ \| '_ \| |/ _ \| | | |/ _ \/ _ \   |
+        |   | |___| | | | | | |_) | | (_) | |_| |  __/  __/   |
+        |   |_____|_| |_| |_| .__/|_|\___/ \__, |\___|\___|   |
+        |                   |_|            |___/              |
+        |    __  __                                           |
+        |   |  \/  | __ _ _ __   __ _  __ _  ___ _ __         |
+        |   | |\/| |/ _' | '_ \ / _' |/ _' |/ _ \ '__|        |
+        |   | |  | | (_| | | | | (_| | (_| |  __/ |           |
+        |   |_|  |_|\__,_|_| |_|\__,_|\__, |\___|_|           |
+        |                             |___/                   |
+        |                                                     |
+        | _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+    
+    `);
+
     runSearch();
 };
 
@@ -37,6 +55,7 @@ const runSearch = () => {
                 'Add A Department',
                 `Add A Role`,
                 'Add An Employee',
+                'Update Employee Role',
                 'Exit',
             ],
         })
@@ -67,7 +86,7 @@ const runSearch = () => {
                     break;
 
                 case 'Update Employee Role':
-                    rangeSearch();
+                    updateERole();
                     break;
 
                 case 'Exit':
@@ -144,7 +163,7 @@ const addDepartment = () => {
                     if (err) throw err;
                     console.log('The department was added successfully!');
 
-                    start();
+                    runSearch();
                 }
             );
         });
@@ -197,7 +216,7 @@ const addRole = () => {
                         if (err) throw err;
                         console.log('The role was added successfully!');
 
-                        start();
+                        runSearch();
                     }
                 );
             });
@@ -255,14 +274,14 @@ const addEmployee = () => {
                             chosenRole = role;
                         }
                     });
-    
+
                     let chosenManager;
                     results2.forEach((employee) => {
                         if ((employee.first_name + " " + employee.last_name) === answer.addManager) {
                             chosenManager = employee;
                         }
                     });
-    
+
                     connection.query(
                         'INSERT INTO employee SET ?',
                         {
@@ -274,79 +293,85 @@ const addEmployee = () => {
                         (err) => {
                             if (err) throw err;
                             console.log('The employee was added successfully!');
-    
-                            start();
+
+                            runSearch();
                         }
                     );
                 });
-            })
         })
+    })
 };
 
-// AGAIN, FIRST AND LAST NAME PROBLEMS
-// const updateERole = () => {
-//     connection.query('SELECT * FROM employee', (err, results) => {
-//         if (err) throw err;
-//         inquirer
-//             .prompt([
-//                 {
-//                     name: 'upEmployee',
-//                     type: 'rawlist',
-//                     choices() {
-//                         const choiceArray = [];
-//                         results.forEach(({ first_name }) => {
-//                             choiceArray.push(first_name);
-//                         });
-//                         return choiceArray;
-//                     },
-//                     message: `Which employee's role would you like to update?`,
-//                 },
-//                 {
-//                     name: 'upRole',
-//                     type: 'rawlist',
-//                     choices() {
-//                         const choiceArray = [];
-//                         results.forEach(({ role }) => {
-//                             choiceArray.push(role);
-//                         });
-//                         return choiceArray;
-//                     },
-//                     message: `Which employee's role would you like to update?`,
-//                 },
-//             ])
-//             .then((answer) => {
-//                 let chosenEmployee;
-//                 results.forEach((employee) => {
-//                     if (item.item_name === answer.choice) {
-//                         chosenItem = item;
-//                     }
-//                 });
+const updateERole = () => {
+    connection.query('SELECT * FROM employee', (err, results) => {
+        if (err) throw err;
+        connection.query('SELECT * FROM role', (err, results2) => {
+            if (err) throw err;
 
-//                 connection.query(
-//                     'UPDATE auctions SET ? WHERE ?',
-//                     [
-//                         {
-//                             highest_bid: answer.bid,
-//                         },
-//                         {
-//                             id: chosenItem.id,
-//                         },
-//                     ],
-//                     (error) => {
-//                         if (error) throw err;
-//                         console.log('Bid placed successfully!');
-//                         start();
-//                     }
-//                 );
-//             } else {
-//                 // bid wasn't high enough, so apologize and start over
-//                 console.log('Your bid was too low. Try again...');
-//                 start();
-//             }
-//         });
-// });
+            inquirer
+                .prompt([
+                    {
+                        name: 'upEmployee',
+                        type: 'rawlist',
+                        choices() {
+                            const choiceArray = [];
+                            results.forEach(({ first_name, last_name }) => {
+                                let fullName = first_name + " " + last_name;
+                                choiceArray.push(fullName);
+                            });
+                            return choiceArray;
+                        },
+                        message: `Which employee would you like to update?`,
+                    },
+                    {
+                        name: 'upRole',
+                        type: 'rawlist',
+                        choices() {
+                            const choiceArray2 = [];
+                            results2.forEach(({ title }) => {
+                                choiceArray2.push(title);
+                            });
+                            return choiceArray2;
+                        },
+                        message: `What is the employee's new role?`,
+                    },
+                ])
+                .then((answer) => {
+                    let chosenEmployee;
+                    results.forEach((employee) => {
+                        if ((employee.first_name + " " + employee.last_name) === answer.upEmployee) {
+                            chosenEmployee = employee;
+                        }
+                    });
 
-// };
+                    let chosenRole;
+                    results2.forEach((role) => {
+                        if ((role.title) === answer.upRole) {
+                            chosenRole = role;
+                        }
+                    });
+
+                    connection.query(
+                        'UPDATE employee SET ? WHERE ?',
+                        [
+                            {
+                                role_id: chosenRole.id,
+                            },
+                            {
+                                id: chosenEmployee.id,
+                            },
+                        ],
+                        (err) => {
+                            if (err) throw err;
+                            console.log('Role updated successfully!');
+
+                            runSearch();
+                        }
+                    );
+                });
+        });
+    });
+};
 
 const updateEManager = () => {
 
