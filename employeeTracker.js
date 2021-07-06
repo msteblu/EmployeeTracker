@@ -35,8 +35,8 @@ const runSearch = () => {
                 'View All Departments',
                 'View All Roles',
                 'View All Employees',
-                'Search for a specific song',
-                `See if an artist's song and album charted together`,
+                'Add A Department',
+                `Add A Role`,
                 'Exit',
             ],
         })
@@ -54,12 +54,12 @@ const runSearch = () => {
                     viewEmployees();
                     break;
 
-                case 'Add A Role':
-                    multiSearch();
+                case 'Add A Department':
+                    addDepartment();
                     break;
 
-                case 'View All Employees':
-                    rangeSearch();
+                case 'Add A Role':
+                    addRole();
                     break;
 
                 case 'Add An Employee':
@@ -125,6 +125,84 @@ const viewEmployees = () => {
     });
 };
 
+const addDepartment = () => {
+    inquirer
+        .prompt([
+            {
+                name: 'addDepartment',
+                type: 'input',
+                message: 'What is the name of the department?',
+            }
+        ])
+        .then((answer) => {
+            connection.query(
+                'INSERT INTO department SET ?',
+                {
+                    name: answer.addDepartment,
+                },
+                (err) => {
+                    if (err) throw err;
+                    console.log('The department was added successfully!');
+                    
+                    start();
+                }
+            );
+        });
+};
+
+const addRole = () => {
+    connection.query(`SELECT * FROM department`, (err, results) => {
+        if (err) throw err;
+        inquirer
+        .prompt([
+            {
+                name: 'addTitle',
+                type: 'input',
+                message: `What is the role's title?`,
+            },
+            {
+                name: 'addSalary',
+                type: 'input',
+                message: `What is the role's salary?`,
+            },
+            {
+                name: 'addDepartment',
+                type: 'rawlist',
+                choices() {
+                    const choiceArray = [];
+                    results.forEach(({ name }) => {
+                        choiceArray.push(name);
+                    });
+                    return choiceArray;
+                },
+                message: `What department is the role in?`,
+            }
+        ])
+        .then((answer) => {
+            let chosenDepartment;
+            results.forEach((department) => {
+                if (department.name === answer.addDepartment) {
+                    chosenDepartment = department;
+                }
+            });
+
+            connection.query(
+                'INSERT INTO role SET ?',
+                {
+                    title: answer.addTitle,
+                    salary: answer.addSalary,
+                    department_id: chosenDepartment.id,
+                },
+                (err) => {
+                    if (err) throw err;
+                    console.log('The role was added successfully!');
+                    
+                    start();
+                }
+            );
+        });
+    })
+};
 
 // Connect to the DB
 connection.connect((err) => {
