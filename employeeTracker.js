@@ -34,7 +34,7 @@ const runSearch = () => {
             choices: [
                 'View All Departments',
                 'View All Roles',
-                'Find data within a specific range',
+                'View All Employees',
                 'Search for a specific song',
                 `See if an artist's song and album charted together`,
                 'Exit',
@@ -50,8 +50,8 @@ const runSearch = () => {
                     viewRoles();
                     break;
 
-                case 'View All Roles':
-                    multiSearch();
+                case 'View All Employees':
+                    viewEmployees();
                     break;
 
                 case 'Add A Role':
@@ -83,11 +83,14 @@ const runSearch = () => {
 
 const viewDepartments = () => {
     const query =
-      'SELECT name FROM department';
+        'SELECT name FROM department';
     connection.query(query, (err, res) => {
-      if (err) throw err;
-      res.forEach(({ name }) => console.log(name));
-      runSearch();
+        if (err) throw err;
+        let cloned = res.map(({ name }) => ({ name }));
+        const table = cTable.getTable(cloned);
+        console.log(table);
+
+        runSearch();
     });
 };
 
@@ -97,25 +100,31 @@ const viewRoles = () => {
         FROM role
         LEFT JOIN department ON role.id = department.id`;
     connection.query(query, (err, res) => {
-      if (err) throw err;
-      res.forEach(({ title, salary, name }) => console.log(title, salary, name));
-      runSearch();
+        if (err) throw err;
+        let cloned = res.map(({ title, salary, name }) => ({ title, salary, name }));
+        const table = cTable.getTable(cloned);
+        console.log(table);
+
+        runSearch();
     });
 };
 
+const viewEmployees = () => {
+    const query =
+        `SELECT first_name, last_name, role.title AS title, department.name AS department
+        FROM employee
+        LEFT JOIN role ON employee.role_id = role.id
+        LEFT JOIN department ON role.department_id = department.id`;
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        let cloned = res.map(({ first_name, last_name, title, department }) => ({ first_name, last_name, title, department }));
+        const table = cTable.getTable(cloned);
+        console.log(table);
 
+        runSearch();
+    });
+};
 
-
-
-// const viewDepartments = () => {
-//     const query =
-//       'SELECT name FROM department';
-//     connection.query(query, (err, res) => {
-//       if (err) throw err;
-//       res.forEach(({ name }) => console.log(name));
-//       runSearch();
-//     });
-// };
 
 // Connect to the DB
 connection.connect((err) => {
