@@ -22,3 +22,7 @@ CREATE TABLE employee(
   role_id INTEGER NOT NULL,
   manager_id INTEGER
 );
+
+INSERT INTO department (name) values ('Sales');
+
+INSERT INTO role (title, salary, department_id) values ('Manager', 30000.00, 1);
