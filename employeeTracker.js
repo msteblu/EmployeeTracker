@@ -4,20 +4,22 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 
+// Connect to mysql
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
 
-    // Your port; if not 3306
+    // PORT
     port: 3306,
 
-    // Your username
+    // USERNAME
     user: process.env.DB_USER,
 
-    // Your password
+    // PASSWORD
     password: process.env.DB_PASS,
     database: 'employeetracker_db',
 });
 
+// First function
 const start = () => {
     console.log(`
         - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -42,6 +44,7 @@ const start = () => {
     runSearch();
 };
 
+// USER OPTIONS
 const runSearch = () => {
     inquirer
         .prompt({
@@ -56,6 +59,7 @@ const runSearch = () => {
                 `Add A Role`,
                 'Add An Employee',
                 'Update Employee Role',
+                'Update Employee Manager',
                 'Exit',
             ],
         })
@@ -88,7 +92,9 @@ const runSearch = () => {
                 case 'Update Employee Role':
                     updateERole();
                     break;
-
+                case 'Update Employee Manager':
+                    updateEManager();
+                    break;
                 case 'Exit':
                     connection.end();
                     break;
@@ -100,6 +106,7 @@ const runSearch = () => {
         });
 };
 
+// View All Departments
 const viewDepartments = () => {
     const query =
         'SELECT name FROM department';
@@ -113,6 +120,7 @@ const viewDepartments = () => {
     });
 };
 
+// View All Roles 
 const viewRoles = () => {
     const query =
         `SELECT title, salary, department_id, department.name AS name
@@ -128,6 +136,7 @@ const viewRoles = () => {
     });
 };
 
+// View All Employees
 const viewEmployees = () => {
     const query =
         `SELECT first_name, last_name, role.title AS title, department.name AS department
@@ -144,6 +153,7 @@ const viewEmployees = () => {
     });
 };
 
+// Add A Department
 const addDepartment = () => {
     inquirer
         .prompt([
@@ -169,6 +179,7 @@ const addDepartment = () => {
         });
 };
 
+// Add A Role
 const addRole = () => {
     connection.query(`SELECT * FROM department`, (err, results) => {
         if (err) throw err;
@@ -223,6 +234,7 @@ const addRole = () => {
     })
 };
 
+// Add An Employee
 const addEmployee = () => {
     connection.query(`SELECT * FROM role`, (err, results) => {
         if (err) throw err;
@@ -302,6 +314,7 @@ const addEmployee = () => {
     })
 };
 
+// Update An Employee Role
 const updateERole = () => {
     connection.query('SELECT * FROM employee', (err, results) => {
         if (err) throw err;
@@ -373,8 +386,74 @@ const updateERole = () => {
     });
 };
 
+// Update An Employee's Manager
 const updateEManager = () => {
+    connection.query('SELECT * FROM employee', (err, results) => {
+        if (err) throw err;
 
+        inquirer
+            .prompt([
+                {
+                    name: 'upEEmployee',
+                    type: 'rawlist',
+                    choices() {
+                        const choiceArray = [];
+                        results.forEach(({ first_name, last_name }) => {
+                            let fullName = first_name + " " + last_name;
+                            choiceArray.push(fullName);
+                        });
+                        return choiceArray;
+                    },
+                    message: `Which employee would you like to update?`,
+                },
+                {
+                    name: 'upManager',
+                    type: 'rawlist',
+                    choices() {
+                        const choiceArray2 = [];
+                        results.forEach(({ first_name, last_name }) => {
+                            let fullName = first_name + " " + last_name;
+                            choiceArray2.push(fullName);
+                        });
+                        return choiceArray2;
+                    },
+                    message: `Who is the employee's new manager?`,
+                },
+            ])
+            .then((answer) => {
+                let chosenEmployee;
+                results.forEach((employee) => {
+                    if ((employee.first_name + " " + employee.last_name) === answer.upEEmployee) {
+                        chosenEmployee = employee;
+                    }
+                });
+
+                let chosenManager;
+                    results.forEach((employee) => {
+                        if ((employee.first_name + " " + employee.last_name) === answer.upManager) {
+                            chosenManager = employee;
+                        }
+                    });
+
+                connection.query(
+                    'UPDATE employee SET ? WHERE ?',
+                    [
+                        {
+                            manager_id: chosenManager.id,
+                        },
+                        {
+                            id: chosenEmployee.id,
+                        },
+                    ],
+                    (err) => {
+                        if (err) throw err;
+                        console.log('Manager updated successfully!');
+
+                        runSearch();
+                    }
+                );
+            });
+    });
 };
 
 const viewMEmployees = () => {
