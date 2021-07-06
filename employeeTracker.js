@@ -37,6 +37,7 @@ const runSearch = () => {
                 'View All Employees',
                 'Add A Department',
                 `Add A Role`,
+                'Add An Employee',
                 'Exit',
             ],
         })
@@ -63,7 +64,7 @@ const runSearch = () => {
                     break;
 
                 case 'Add An Employee':
-                    rangeSearch();
+                    addEmployee();
                     break;
 
                 case 'Update Employee Role':
@@ -203,6 +204,61 @@ const addRole = () => {
         });
     })
 };
+
+const addEmployee = () => {
+    connection.query(`SELECT * FROM role`, (err, results) => {
+        if (err) throw err;
+        inquirer
+        .prompt([
+            {
+                name: 'addFirst',
+                type: 'input',
+                message: `What is the employee's first name?`,
+            },
+            {
+                name: 'addLast',
+                type: 'input',
+                message: `What is the employee's last name?`,
+            },
+            {
+                name: 'addRole',
+                type: 'rawlist',
+                choices() {
+                    const choiceArray = [];
+                    results.forEach(({ title }) => {
+                        choiceArray.push(title);
+                    });
+                    return choiceArray;
+                },
+                message: `What role does the employee have?`,
+            }
+        ])
+        .then((answer) => {
+            let chosenRole;
+            results.forEach((role) => {
+                if (role.title === answer.addRole) {
+                    chosenRole = role;
+                }
+            });
+
+            connection.query(
+                'INSERT INTO employee SET ?',
+                {
+                    first_name: answer.addFirst,
+                    last_name: answer.addLast,
+                    role_id: chosenRole.id,
+                },
+                (err) => {
+                    if (err) throw err;
+                    console.log('The employee was added successfully!');
+                    
+                    start();
+                }
+            );
+        });
+    })
+};
+
 
 // Connect to the DB
 connection.connect((err) => {
