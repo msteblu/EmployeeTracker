@@ -61,7 +61,9 @@ const runSearch = () => {
                 'Update Employee Role',
                 'Update Employee Manager',
                 'View Employees By Manager',
-                'Delete a Department',
+                'Delete A Department',
+                'Delete A Role',
+                'Delete An Employee',
                 'Exit',
             ],
         })
@@ -100,8 +102,14 @@ const runSearch = () => {
                 case 'View Employees By Manager':
                     viewMEmployees();
                     break;
-                case 'Delete a Department':
+                case 'Delete A Department':
                     deleteDepartments();
+                    break;
+                case 'Delete A Role':
+                    deleteRoles();
+                    break;
+                case 'Delete An Employee':
+                    deleteEmployees();
                     break;
                 case 'Exit':
                     connection.end();
@@ -513,57 +521,140 @@ const viewMEmployees = () => {
 
 };
 
-const deleteDepartments = () => {
-    connection.query('SELECT * FROM department', (err, results) => {
+// const deleteDepartments = () => {
+//     connection.query('SELECT * FROM department', (err, results) => {
+//         if (err) throw err;
+
+//         inquirer
+//             .prompt([
+//                 {
+//                     name: 'deleteDepartment',
+//                     type: 'rawlist',
+//                     choices() {
+//                         const choiceArray = [];
+//                         results.forEach(({ name }) => {
+//                             choiceArray.push(name);
+//                         });
+//                         return choiceArray;
+//                     },
+//                     message: `Which department would you like to delete?`,
+//                 },
+//             ])
+//             .then((answer) => {
+//                 let chosenDepartment;
+//                 results.forEach((department) => {
+//                     if ((department.name) === answer.deleteDepartment) {
+//                         chosenDepartment = department;
+//                     }
+//                 });
+
+//                 connection.query(
+//                     'DELETE FROM department WHERE ?',
+//                     [
+//                         {
+//                             id: chosenDepartment.id,
+//                         },
+//                     ],
+//                     (err) => {
+//                         if (err) throw err;
+//                         console.log('Department deleted successfully!');
+
+//                         runSearch();
+//                     }
+//                 );
+//             });
+//     });
+// };
+
+// const deleteRoles = () => {
+//     connection.query('SELECT * FROM role', (err, results) => {
+//         if (err) throw err;
+
+//         inquirer
+//             .prompt([
+//                 {
+//                     name: 'deleteRole',
+//                     type: 'rawlist',
+//                     choices() {
+//                         const choiceArray = [];
+//                         results.forEach(({ title }) => {
+//                             choiceArray.push(title);
+//                         });
+//                         return choiceArray;
+//                     },
+//                     message: `Which role would you like to delete?`,
+//                 },
+//             ])
+//             .then((answer) => {
+//                 let chosenRole;
+//                 results.forEach((role) => {
+//                     if ((role.title) === answer.deleteRole) {
+//                         chosenRole = role;
+//                     }
+//                 });
+
+//                 connection.query(
+//                     'DELETE FROM role WHERE ?',
+//                     [
+//                         {
+//                             id: chosenRole.id,
+//                         },
+//                     ],
+//                     (err) => {
+//                         if (err) throw err;
+//                         console.log('Role deleted successfully!');
+
+//                         runSearch();
+//                     }
+//                 );
+//             });
+//     });
+// };
+
+const deleteEmployees = () => {
+    connection.query('SELECT * FROM employee', (err, results) => {
         if (err) throw err;
 
         inquirer
             .prompt([
                 {
-                    name: 'deleteDepartment',
+                    name: 'deleteEmployee',
                     type: 'rawlist',
                     choices() {
                         const choiceArray = [];
-                        results.forEach(({ name }) => {
-                            choiceArray.push(name);
+                        results.forEach(({ first_name, last_name }) => {
+                            let fullName = first_name + " " + last_name;
+                            choiceArray.push(fullName);
                         });
                         return choiceArray;
                     },
-                    message: `Which department would you like to delete?`,
+                    message: `Which employee would you like to delete?`,
                 },
             ])
             .then((answer) => {
-                let chosenDepartment;
-                results.forEach((department) => {
-                    if ((department.name) === answer.deleteDepartment) {
-                        chosenDepartment = department;
+                let chosenEmployee;
+                results.forEach((employee) => {
+                    if ((employee.first_name + " " + employee.last_name) === answer.deleteEmployee) {
+                        chosenEmployee = employee;
                     }
                 });
 
                 connection.query(
-                    'DELETE FROM department WHERE ?',
+                    'DELETE FROM employee WHERE ?',
                     [
                         {
-                            id: chosenDepartment.id,
+                            id: chosenEmployee.id,
                         },
                     ],
                     (err) => {
                         if (err) throw err;
-                        console.log('Department deleted successfully!');
+                        console.log('Employee deleted successfully!');
 
                         runSearch();
                     }
                 );
             });
     });
-};
-
-const deleteRoles = () => {
-
-};
-
-const deleteEmployees = () => {
-
 };
 
 const viewDepartmentBudget = () => {
