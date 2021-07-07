@@ -60,6 +60,7 @@ const runSearch = () => {
                 'Add An Employee',
                 'Update Employee Role',
                 'Update Employee Manager',
+                'View Employees By Manager',
                 'Exit',
             ],
         })
@@ -94,6 +95,9 @@ const runSearch = () => {
                     break;
                 case 'Update Employee Manager':
                     updateEManager();
+                    break;
+                case 'View Employees By Manager':
+                    viewMEmployees();
                     break;
                 case 'Exit':
                     connection.end();
@@ -457,6 +461,51 @@ const updateEManager = () => {
 };
 
 const viewMEmployees = () => {
+    const query = `SELECT DISTINCT m.id, m.first_name, m.last_name 
+                    FROM employeetracker_db.employee e 
+                    INNER JOIN employeetracker_db.employee m ON m.id = e.manager_id`;
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        connection.query('SELECT * FROM employee', (err, results2) => {
+            if (err) throw err;
+            inquirer
+                .prompt([
+                    {
+                        name: 'mEmployee',
+                        type: 'rawlist',
+                        choices() {
+                            const choiceArray = [];
+                            results.forEach(({ first_name, last_name }) => {
+                                let fullName = first_name + " " + last_name;
+                                choiceArray.push(fullName);
+                            });
+                            return choiceArray;
+                        },
+                        message: `Which manager's employees to you want to list?`,
+                    },
+                ])
+                .then((answer) => {
+                    let chosenManager;
+                    results.forEach((manager) => {
+                        if ((manager.first_name + " " + manager.last_name) === answer.mEmployee) {
+                            chosenManager = manager;
+                        }
+                    });
+                    let listEmployees = [];
+                    results2.forEach((employee) => {
+                        if ((employee.manager_id) === chosenManager.id) {
+                            listEmployees.push(employee);
+                        }
+                    });
+                    let cloned = listEmployees.map(({ id, first_name, last_name }) => ({ id, first_name, last_name }));
+                    const table = cTable.getTable(cloned);
+                    console.log(table);
+
+                    runSearch();
+
+                });
+        });
+    });
 
 };
 
