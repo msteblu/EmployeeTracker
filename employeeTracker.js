@@ -472,6 +472,7 @@ const updateEManager = () => {
     });
 };
 
+// View employees by manager
 const viewMEmployees = () => {
     const query = `SELECT DISTINCT m.id, m.first_name, m.last_name 
                     FROM employeetracker_db.employee e 
@@ -521,96 +522,99 @@ const viewMEmployees = () => {
 
 };
 
-// const deleteDepartments = () => {
-//     connection.query('SELECT * FROM department', (err, results) => {
-//         if (err) throw err;
+// Delete a Department
+const deleteDepartments = () => {
+    connection.query('SELECT * FROM department', (err, results) => {
+        if (err) throw err;
 
-//         inquirer
-//             .prompt([
-//                 {
-//                     name: 'deleteDepartment',
-//                     type: 'rawlist',
-//                     choices() {
-//                         const choiceArray = [];
-//                         results.forEach(({ name }) => {
-//                             choiceArray.push(name);
-//                         });
-//                         return choiceArray;
-//                     },
-//                     message: `Which department would you like to delete?`,
-//                 },
-//             ])
-//             .then((answer) => {
-//                 let chosenDepartment;
-//                 results.forEach((department) => {
-//                     if ((department.name) === answer.deleteDepartment) {
-//                         chosenDepartment = department;
-//                     }
-//                 });
+        inquirer
+            .prompt([
+                {
+                    name: 'deleteDepartment',
+                    type: 'rawlist',
+                    choices() {
+                        const choiceArray = [];
+                        results.forEach(({ name }) => {
+                            choiceArray.push(name);
+                        });
+                        return choiceArray;
+                    },
+                    message: `Which department would you like to delete?`,
+                },
+            ])
+            .then((answer) => {
+                let chosenDepartment;
+                results.forEach((department) => {
+                    if ((department.name) === answer.deleteDepartment) {
+                        chosenDepartment = department;
+                    }
+                });
 
-//                 connection.query(
-//                     'DELETE FROM department WHERE ?',
-//                     [
-//                         {
-//                             id: chosenDepartment.id,
-//                         },
-//                     ],
-//                     (err) => {
-//                         if (err) throw err;
-//                         console.log('Department deleted successfully!');
+                connection.query(
+                    'DELETE FROM department WHERE ?',
+                    [
+                        {
+                            id: chosenDepartment.id,
+                        },
+                    ],
+                    (err) => {
+                        if (err) throw err;
+                        console.log('Department deleted successfully!');
 
-//                         runSearch();
-//                     }
-//                 );
-//             });
-//     });
-// };
+                        runSearch();
+                    }
+                );
+            });
+    });
+};
 
-// const deleteRoles = () => {
-//     connection.query('SELECT * FROM role', (err, results) => {
-//         if (err) throw err;
+// Delete a Role
+const deleteRoles = () => {
+    connection.query('SELECT * FROM role', (err, results) => {
+        if (err) throw err;
 
-//         inquirer
-//             .prompt([
-//                 {
-//                     name: 'deleteRole',
-//                     type: 'rawlist',
-//                     choices() {
-//                         const choiceArray = [];
-//                         results.forEach(({ title }) => {
-//                             choiceArray.push(title);
-//                         });
-//                         return choiceArray;
-//                     },
-//                     message: `Which role would you like to delete?`,
-//                 },
-//             ])
-//             .then((answer) => {
-//                 let chosenRole;
-//                 results.forEach((role) => {
-//                     if ((role.title) === answer.deleteRole) {
-//                         chosenRole = role;
-//                     }
-//                 });
+        inquirer
+            .prompt([
+                {
+                    name: 'deleteRole',
+                    type: 'rawlist',
+                    choices() {
+                        const choiceArray = [];
+                        results.forEach(({ title }) => {
+                            choiceArray.push(title);
+                        });
+                        return choiceArray;
+                    },
+                    message: `Which role would you like to delete?`,
+                },
+            ])
+            .then((answer) => {
+                let chosenRole;
+                results.forEach((role) => {
+                    if ((role.title) === answer.deleteRole) {
+                        chosenRole = role;
+                    }
+                });
 
-//                 connection.query(
-//                     'DELETE FROM role WHERE ?',
-//                     [
-//                         {
-//                             id: chosenRole.id,
-//                         },
-//                     ],
-//                     (err) => {
-//                         if (err) throw err;
-//                         console.log('Role deleted successfully!');
+                connection.query(
+                    'DELETE FROM role WHERE ?',
+                    [
+                        {
+                            id: chosenRole.id,
+                        },
+                    ],
+                    (err) => {
+                        if (err) throw err;
+                        console.log('Role deleted successfully!');
 
-//                         runSearch();
-//                     }
-//                 );
-//             });
-//     });
-// };
+                        runSearch();
+                    }
+                );
+            });
+    });
+};
 
+// Delete an Employee
 const deleteEmployees = () => {
     connection.query('SELECT * FROM employee', (err, results) => {
         if (err) throw err;
@@ -671,21 +675,3 @@ connection.connect((err) => {
     console.log(`connected as id ${connection.threadId}\n`);
     start();
 });
-
-
-//  - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// |                                                     |
-// |    _____                 _                          |
-// |   | ____|_ __ ___  _ __ | | ___  _   _  ___  ___    |
-// |   |  _| | '_ ` _ \| '_ \| |/ _ \| | | |/ _ \/ _ \   |
-// |   | |___| | | | | | |_) | | (_) | |_| |  __/  __/   |
-// |   |_____|_| |_| |_| .__/|_|\___/ \__, |\___|\___|   |
-// |                   |_|            |___/              |
-// |    __  __                                           |
-// |   |  \/  | __ _ _ __   __ _  __ _  ___ _ __         |
-// |   | |\/| |/ _` | `_ \ / _` |/ _` |/ _ \ `__|        |
-// |   | |  | | (_| | | | | (_| | (_| |  __/ |           |
-// |   |_|  |_|\__,_|_| |_|\__,_|\__, |\___|_|           |
-// |                             |___/                   |
-// |                                                     |
-// | _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
