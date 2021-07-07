@@ -61,6 +61,7 @@ const runSearch = () => {
                 'Update Employee Role',
                 'Update Employee Manager',
                 'View Employees By Manager',
+                'Delete a Department',
                 'Exit',
             ],
         })
@@ -98,6 +99,9 @@ const runSearch = () => {
                     break;
                 case 'View Employees By Manager':
                     viewMEmployees();
+                    break;
+                case 'Delete a Department':
+                    deleteDepartments();
                     break;
                 case 'Exit':
                     connection.end();
@@ -510,7 +514,48 @@ const viewMEmployees = () => {
 };
 
 const deleteDepartments = () => {
+    connection.query('SELECT * FROM department', (err, results) => {
+        if (err) throw err;
 
+        inquirer
+            .prompt([
+                {
+                    name: 'deleteDepartment',
+                    type: 'rawlist',
+                    choices() {
+                        const choiceArray = [];
+                        results.forEach(({ name }) => {
+                            choiceArray.push(name);
+                        });
+                        return choiceArray;
+                    },
+                    message: `Which department would you like to delete?`,
+                },
+            ])
+            .then((answer) => {
+                let chosenDepartment;
+                results.forEach((department) => {
+                    if ((department.name) === answer.deleteDepartment) {
+                        chosenDepartment = department;
+                    }
+                });
+
+                connection.query(
+                    'DELETE FROM department WHERE ?',
+                    [
+                        {
+                            id: chosenDepartment.id,
+                        },
+                    ],
+                    (err) => {
+                        if (err) throw err;
+                        console.log('Department deleted successfully!');
+
+                        runSearch();
+                    }
+                );
+            });
+    });
 };
 
 const deleteRoles = () => {
