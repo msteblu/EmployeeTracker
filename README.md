@@ -21,7 +21,7 @@ It allows users to add, delete, and view employees, roles, and departments - as 
 
 This application is run through the command-line. To use this application, clone and download the files from this repository. Additionally, run 'npm install' to install the packages included in the package.json (required packages are mysql, inquirer, dotenv, and console.table).
 
-The trackerSeeds.sql file can be used to easily populate a MYSQL database. 
+The trackerSeeds.sql file can be used to easily populate a MySQL database. 
 Create your own .env file to contain your database host, user, and password.
     
 ## Usage
