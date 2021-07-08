@@ -8,7 +8,7 @@
 
 This is a command-line application that provides a solution for easily managing a company's employees using node, the Inquirer package, and MySQL. It allows employers to view and manage different aspects of the departments, roles, and employees in their company. 
 
-It allows users to add, delete, and view employees, roles, and departments, as well as updating roles and managers, or viewing departments budgets.
+It allows users to add, delete, and view employees, roles, and departments - as well as updating roles and managers - or viewing departments' budgets.
     
 ## Table of Contents
  - [Installation](#installation)
@@ -36,7 +36,7 @@ Cycle through the options by using the arrow keys and enter to select. View, add
 *(Click on GIF to be taken to the video of the walkthrough.)*
 
 *Scroll through and interact with the application to make choices and update the database.*
-![Screenshot of Application](asset/application.png)
+![Screenshot of Application](assets/application.png)
 
 ## License
 
