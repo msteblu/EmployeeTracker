@@ -49,4 +49,5 @@ values
 INSERT INTO employee 
   (first_name, last_name, role_id, manager_id) 
 values 
-	('Joe', 'Kingsley', 1, NULL);
+	('Joe', 'Kingsley', 1, NULL),
+  ('Lottie', 'Orion', 2, 1);
