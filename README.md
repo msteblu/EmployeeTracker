@@ -32,9 +32,11 @@ Cycle through the options by using the arrow keys and enter to select. View, add
 
 *See a video of the application in use [here](https://www.awesomescreenshot.com/video/4416767?key=1689c0490c9d56ff02dba9aad1fd25e1).*
 
+[![Walkthrough Video of Application](assets/Employee_Tracker.gif)](https://www.awesomescreenshot.com/video/4416767?key=1689c0490c9d56ff02dba9aad1fd25e1)
+*(Click on GIF to be taken to the video of the walkthrough.)*
 
-*View saved notes on the left, write new notes on the right, and save or start a new note by clicking the buttons in the upper-right-hand corner.*
-![Screenshot of Application](asset/app.png)
+*Scroll through and interact with the application to make choices and update the database.*
+![Screenshot of Application](asset/application.png)
 
 ## License
 
