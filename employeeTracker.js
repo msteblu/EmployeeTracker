@@ -155,15 +155,16 @@ const viewRoles = () => {
 // View All Employees
 const viewEmployees = () => {
     const query =
-        `SELECT first_name, last_name, role.title AS title, department.name AS department
+        `SELECT employee.id AS id, first_name, last_name, role.title AS title, department.name AS department, role.salary AS salary,
+        (SELECT concat(e2.first_name, ' ', e2.last_name) AS manager FROM employee AS e2 WHERE e2.id = employee.manager_id) AS manager
         FROM employee
         LEFT JOIN role ON employee.role_id = role.id
         LEFT JOIN department ON role.department_id = department.id`;
     connection.query(query, (err, res) => {
         if (err) throw err;
-        let cloned = res.map(({ first_name, last_name, title, department }) => ({ first_name, last_name, title, department }));
+        let cloned = res.map(({ id, first_name, last_name, title, department, salary, manager }) => ({ id, first_name, last_name, title, department, salary, manager }));
         const table = cTable.getTable(cloned);
-        console.log(table);
+        console.log(table)
 
         runSearch();
     });
