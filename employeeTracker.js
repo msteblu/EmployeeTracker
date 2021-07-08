@@ -141,7 +141,7 @@ const viewRoles = () => {
     const query =
         `SELECT title, salary, department_id, department.name AS name
         FROM role
-        LEFT JOIN department ON role.id = department.id`;
+        LEFT JOIN department ON role.department_id = department.id`;
     connection.query(query, (err, res) => {
         if (err) throw err;
         let cloned = res.map(({ title, salary, name }) => ({ title, salary, name }));
@@ -256,7 +256,7 @@ const addEmployee = () => {
         if (err) throw err;
         connection.query(`SELECT * FROM employee`, (err, results2) => {
             if (err) throw err;
-            console.log(results);
+            // console.log(results);
             inquirer
                 .prompt([
                     {
@@ -285,7 +285,7 @@ const addEmployee = () => {
                         name: 'addManager',
                         type: 'rawlist',
                         choices() {
-                            const choiceArray2 = [];
+                            const choiceArray2 = ['None'];
                             results2.forEach(({ first_name, last_name }) => {
                                 let fullName = first_name + " " + last_name;
                                 choiceArray2.push(fullName);
@@ -307,6 +307,8 @@ const addEmployee = () => {
                     results2.forEach((employee) => {
                         if ((employee.first_name + " " + employee.last_name) === answer.addManager) {
                             chosenManager = employee;
+                        } else {
+                            chosenManager = "";
                         }
                     });
 
@@ -426,7 +428,7 @@ const updateEManager = () => {
                     name: 'upManager',
                     type: 'rawlist',
                     choices() {
-                        const choiceArray2 = [];
+                        const choiceArray2 = ['None'];
                         results.forEach(({ first_name, last_name }) => {
                             let fullName = first_name + " " + last_name;
                             choiceArray2.push(fullName);
@@ -448,6 +450,8 @@ const updateEManager = () => {
                     results.forEach((employee) => {
                         if ((employee.first_name + " " + employee.last_name) === answer.upManager) {
                             chosenManager = employee;
+                        } else {
+                            chosenManager = "";
                         }
                     });
 
