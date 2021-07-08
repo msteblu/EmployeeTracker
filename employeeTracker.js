@@ -64,6 +64,7 @@ const runSearch = () => {
                 'Delete A Department',
                 'Delete A Role',
                 'Delete An Employee',
+                'View Total Utilized Budgets of Departments',
                 'Exit',
             ],
         })
@@ -110,6 +111,9 @@ const runSearch = () => {
                     break;
                 case 'Delete An Employee':
                     deleteEmployees();
+                    break;
+                case 'View Total Utilized Budgets of Departments':
+                    viewDepartmentBudget();
                     break;
                 case 'Exit':
                     connection.end();
@@ -257,7 +261,6 @@ const addEmployee = () => {
         if (err) throw err;
         connection.query(`SELECT * FROM employee`, (err, results2) => {
             if (err) throw err;
-            // console.log(results);
             inquirer
                 .prompt([
                     {
@@ -666,8 +669,22 @@ const deleteEmployees = () => {
     });
 };
 
+// View Total Utilized Budgets of Departments
 const viewDepartmentBudget = () => {
+    const query =  `SELECT department.name AS Department, sum(role.salary) as Budget
+        from department, role, employee
+        where employee.role_id = role.id and
+        role.department_id = department.id
+        group by department.name`;
 
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        let cloned = res.map(({ Department, Budget}) => ({ Department, Budget }));
+        const table = cTable.getTable(cloned);
+        console.log(table)
+
+        runSearch();
+    });
 };
 
 
