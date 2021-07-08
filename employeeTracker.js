@@ -311,7 +311,7 @@ const addEmployee = () => {
                     results2.forEach((employee) => {
                         if ((employee.first_name + " " + employee.last_name) === answer.addManager) {
                             chosenManager = employee;
-                        } else {
+                        } else if (answer.addManager === 'None') {
                             chosenManager = "";
                         }
                     });
@@ -454,7 +454,7 @@ const updateEManager = () => {
                     results.forEach((employee) => {
                         if ((employee.first_name + " " + employee.last_name) === answer.upManager) {
                             chosenManager = employee;
-                        } else {
+                        } else if (answer.upManager === 'None') {
                             chosenManager = "";
                         }
                     });
@@ -483,8 +483,8 @@ const updateEManager = () => {
 // View employees by manager
 const viewMEmployees = () => {
     const query = `SELECT DISTINCT m.id, m.first_name, m.last_name 
-                    FROM employeetracker_db.employee e 
-                    INNER JOIN employeetracker_db.employee m ON m.id = e.manager_id`;
+                    FROM employee e 
+                    INNER JOIN employee m ON m.id = e.manager_id`;
     connection.query(query, (err, results) => {
         if (err) throw err;
         connection.query('SELECT * FROM employee', (err, results2) => {
